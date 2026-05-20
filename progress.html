@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudySpace - Progress Report</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="brand">
+            <i class="fa-solid fa-graduation-cap"></i> STUDYSPACE
+        </div>
+        <div class="nav flex-column mt-4">
+            <a href="index.html" class="nav-link">
+                <i class="fa-solid fa-border-all"></i> Dashboard
+            </a>
+            <a href="task-board.html" class="nav-link">
+                <i class="fa-solid fa-columns"></i> Task Board
+            </a>
+            <a href="pomodoro.html" class="nav-link">
+                <i class="fa-solid fa-clock"></i> Pomodoro
+            </a>
+            <a href="progress.html" class="nav-link active">
+                <i class="fa-solid fa-chart-line"></i> Progress
+            </a>
+            <a href="profile.html" class="nav-link">
+                <i class="fa-regular fa-user"></i> Profile
+            </a>
+        </div>
+        <div class="position-absolute bottom-0 w-100 p-3" style="border-top: 1px solid var(--border-color);">
+            <div class="d-flex justify-content-between text-muted" style="font-size: 0.8rem;">
+                <span><i class="fa-regular fa-circle-question"></i> Bantuan</span>
+                <span><i class="fa-solid fa-gear"></i> Pengaturan</span>
+                <span><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Topbar -->
+        <header class="topbar">
+            <button class="icon-btn"><i class="fa-regular fa-bell"></i><span class="position-absolute translate-middle p-1 bg-danger border border-light rounded-circle" style="width: 8px; height: 8px; margin-top: 5px;"></span></button>
+            <button class="icon-btn"><i class="fa-solid fa-gear"></i></button>
+            <div class="user-profile">
+                <img src="https://ui-avatars.com/api/?name=Ahmad&background=4F46E5&color=fff" alt="User Profile">
+            </div>
+        </header>
+
+        <!-- Content Wrapper -->
+        <div class="content-wrapper">
+            <h1 class="page-title">PROGRESS REPORT</h1>
+            <p class="page-subtitle">Pantau tingkat penyelesaian tugas per mata kuliah Anda di sini.</p>
+
+            <!-- Overall Performance -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="custom-card d-flex align-items-center justify-content-between" style="background: linear-gradient(135deg, rgba(79, 70, 229, 0.2), rgba(6, 182, 212, 0.1)); border-color: var(--accent-indigo);">
+                        <div>
+                            <h4 class="fw-bold mb-1 text-main">Laporan Performa Akademik</h4>
+                            <p class="text-muted mb-0">Rata-rata penyelesaian tugas Anda meningkat 12% minggu ini.</p>
+                        </div>
+                        <div class="text-end">
+                            <div class="fs-1 fw-bold text-cyan" style="color: var(--accent-cyan);">82%</div>
+                            <span class="badge bg-success opacity-75">Sangat Baik</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Subject Completion Cards -->
+            <h5 class="fw-bold mb-3">Tingkat Penyelesaian Mata Kuliah</h5>
+            <div class="row g-4 mb-4">
+                
+                <!-- Subject 1 -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="custom-card">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="bg-dark p-2 rounded text-cyan" style="color: var(--accent-cyan);"><i class="fa-solid fa-square-root-variable fs-4"></i></div>
+                                <div>
+                                    <h6 class="mb-0 fw-bold">Matematika Diskret</h6>
+                                    <small class="text-muted">IF-2026</small>
+                                </div>
+                            </div>
+                            <span class="fs-5 fw-bold text-main">90%</span>
+                        </div>
+                        <div class="progress mb-2" style="height: 6px;">
+                            <div class="progress-bar" role="progressbar" style="width: 90%; background: linear-gradient(90deg, var(--accent-indigo), var(--success));"></div>
+                        </div>
+                        <div class="d-flex justify-content-between text-muted" style="font-size: 0.8rem;">
+                            <span>Tugas Selesai: 9/10</span>
+                            <span>1 Tugas Tersisa</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Subject 2 -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="custom-card">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="bg-dark p-2 rounded text-indigo" style="color: var(--accent-indigo);"><i class="fa-solid fa-code fs-4"></i></div>
+                                <div>
+                                    <h6 class="mb-0 fw-bold">PBO (Java)</h6>
+                                    <small class="text-muted">IF-2030</small>
+                                </div>
+                            </div>
+                            <span class="fs-5 fw-bold text-main">65%</span>
+                        </div>
+                        <div class="progress mb-2" style="height: 6px;">
+                            <div class="progress-bar" role="progressbar" style="width: 65%; background: linear-gradient(90deg, var(--accent-indigo), var(--warning));"></div>
+                        </div>
+                        <div class="d-flex justify-content-between text-muted" style="font-size: 0.8rem;">
+                            <span>Tugas Selesai: 13/20</span>
+                            <span class="text-warning">7 Tugas Tersisa</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Subject 3 -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="custom-card">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="bg-dark p-2 rounded text-danger" style="color: var(--danger);"><i class="fa-solid fa-microscope fs-4"></i></div>
+                                <div>
+                                    <h6 class="mb-0 fw-bold">Biologi Dasar</h6>
+                                    <small class="text-muted">KU-1011</small>
+                                </div>
+                            </div>
+                            <span class="fs-5 fw-bold text-main">30%</span>
+                        </div>
+                        <div class="progress mb-2" style="height: 6px;">
+                            <div class="progress-bar bg-danger" role="progressbar" style="width: 30%;"></div>
+                        </div>
+                        <div class="d-flex justify-content-between text-muted" style="font-size: 0.8rem;">
+                            <span>Tugas Selesai: 3/10</span>
+                            <span class="text-danger">7 Tugas Tersisa</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Recent Achievements / Log -->
+            <div class="custom-card">
+                <div class="card-title">AKTIVITAS TERAKHIR</div>
+                <div class="table-responsive">
+                    <table class="table table-custom table-borderless">
+                        <thead>
+                            <tr>
+                                <th>Tanggal</th>
+                                <th>Aktivitas</th>
+                                <th>Mata Pelajaran</th>
+                                <th>Dampak Progres</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="text-muted">Hari ini, 10:30</td>
+                                <td>Menyelesaikan <strong>"Tugas Besar PBO Bab 1"</strong></td>
+                                <td>PBO (Java)</td>
+                                <td><span class="text-success"><i class="fa-solid fa-arrow-trend-up me-1"></i> +5%</span></td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">Kemarin, 14:00</td>
+                                <td>Menyelesaikan <strong>"Kuis Logika Proposisi"</strong></td>
+                                <td>Matematika Diskret</td>
+                                <td><span class="text-success"><i class="fa-solid fa-arrow-trend-up me-1"></i> +10%</span></td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">12 Okt 2026</td>
+                                <td>Sesi Fokus Pomodoro (4 Sesi)</td>
+                                <td>Umum</td>
+                                <td><span class="text-info"><i class="fa-solid fa-fire me-1"></i> Produktivitas Naik</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="assets/js/main.js"></script>
+</body>
+</html>
