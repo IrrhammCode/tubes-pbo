@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 public class AssignmentTask extends Task {
     private String attachmentLink;
 
+    public AssignmentTask() { super(); }
+
     public AssignmentTask(String activityId, String title, LocalDateTime deadline, int difficultyLevel, String attachmentLink) {
         super(activityId, title, deadline, difficultyLevel);
         this.attachmentLink = attachmentLink;

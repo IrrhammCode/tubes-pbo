@@ -2,9 +2,12 @@ package com.studyspace.model;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.ArrayList;
 
 public class ExamTask extends Task {
     private List<String> syllabusList;
+
+    public ExamTask() { super(); this.syllabusList = new ArrayList<>(); }
 
     public ExamTask(String activityId, String title, LocalDateTime deadline, int difficultyLevel, List<String> syllabusList) {
         super(activityId, title, deadline, difficultyLevel);
