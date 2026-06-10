@@ -2,10 +2,8 @@ package com.studyspace.controller;
 
 import com.studyspace.model.Subject;
 import com.studyspace.model.Task;
-import org.springframework.stereotype.Service;
 import java.util.*;
 
-@Service
 public class ProgressTracker {
 
     public double calculateSubjectCompletion(Subject subject) {

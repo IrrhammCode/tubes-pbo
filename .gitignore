@@ -22,3 +22,5 @@ apache-maven-3.9.6/
 
 # OS
 .DS_Store
+*.md
+!README.md

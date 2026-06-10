@@ -1,15 +1,12 @@
 package com.studyspace.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Subject {
     private String subjectCode;
     private String subjectName;
-    @JsonIgnore
     private List<Task> tasks;
-    @JsonIgnore
     private List<Note> notes;
 
     public Subject() { this.tasks = new ArrayList<>(); this.notes = new ArrayList<>(); }

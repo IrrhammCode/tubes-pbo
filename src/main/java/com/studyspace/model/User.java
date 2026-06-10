@@ -1,6 +1,5 @@
 package com.studyspace.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +10,6 @@ public class User {
     private int pomodoroSessionsCount;
     private int totalFocusMinutes;
     private String joinedDate;
-    @JsonIgnore
     private List<Subject> subjects;
 
     public User() { this.subjects = new ArrayList<>(); }

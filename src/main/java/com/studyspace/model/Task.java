@@ -1,7 +1,6 @@
 package com.studyspace.model;
 
 import com.studyspace.interfaces.Prioritizable;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
@@ -35,7 +34,6 @@ public abstract class Task extends Activity implements Prioritizable {
     public int getDifficultyLevel() { return difficultyLevel; }
     public void setDifficultyLevel(int difficultyLevel) { this.difficultyLevel = difficultyLevel; }
     public boolean isCompleted() { return isCompleted; }
-    @JsonIgnore
     public boolean getIsCompleted() { return isCompleted; }
     public void setCompleted(boolean completed) { isCompleted = completed; }
     public String getStatus() { return status; }

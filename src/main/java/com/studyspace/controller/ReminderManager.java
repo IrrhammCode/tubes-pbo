@@ -1,10 +1,8 @@
 package com.studyspace.controller;
 
 import com.studyspace.model.Task;
-import org.springframework.stereotype.Service;
 import java.util.*;
 
-@Service
 public class ReminderManager {
     private PriorityQueue<Task> taskQueue;
 

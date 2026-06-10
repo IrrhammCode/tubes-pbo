@@ -1,16 +1,7 @@
 package com.studyspace.model;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
 import java.time.LocalDateTime;
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
-@JsonSubTypes({
-    @JsonSubTypes.Type(value = AssignmentTask.class, name = "ASSIGNMENT"),
-    @JsonSubTypes.Type(value = ExamTask.class, name = "EXAM"),
-    @JsonSubTypes.Type(value = TextNote.class, name = "TEXT_NOTE"),
-    @JsonSubTypes.Type(value = ChecklistNote.class, name = "CHECKLIST_NOTE")
-})
 public abstract class Activity {
     protected String activityId;
     protected String title;
