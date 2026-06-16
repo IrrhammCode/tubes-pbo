@@ -68,6 +68,38 @@ public class TaskServlet extends HttpServlet {
             } finally {
                 db.disconnect();
             }
+        } else if ("updateStatus".equals(action) && taskId != null) {
+            String newStatus = request.getParameter("status"); // TODO, IN_PROGRESS, DONE
+            
+            if (newStatus != null) {
+                DatabaseManager db = new DatabaseManager();
+                Connection con = db.getConnection();
+                try {
+                    if (con != null) {
+                        boolean isCompleted = "DONE".equals(newStatus);
+                        String sql = "UPDATE tasks SET status = ?, isCompleted = ? WHERE activityId = ?";
+                        PreparedStatement pstmt = con.prepareStatement(sql);
+                        pstmt.setString(1, newStatus);
+                        pstmt.setBoolean(2, isCompleted);
+                        pstmt.setString(3, taskId);
+                        pstmt.executeUpdate();
+                        pstmt.close();
+                        
+                        if (isCompleted) {
+                            int userId = (int) session.getAttribute("userId");
+                            String xpSql = "UPDATE users SET totalXP = totalXP + 50 WHERE id = ?";
+                            PreparedStatement pstmtXp = con.prepareStatement(xpSql);
+                            pstmtXp.setInt(1, userId);
+                            pstmtXp.executeUpdate();
+                            pstmtXp.close();
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    db.disconnect();
+                }
+            }
         }
         
         response.sendRedirect("task-board.jsp");
@@ -111,7 +143,12 @@ public class TaskServlet extends HttpServlet {
                     }
                     pstmt.setString(4, deadline);
                     pstmt.setInt(5, difficulty);
+                    
+                    if (subjectCode != null && subjectCode.trim().isEmpty()) {
+                        subjectCode = null;
+                    }
                     pstmt.setString(6, subjectCode);
+                    
                     pstmt.setInt(7, userId);
                     pstmt.executeUpdate();
                     pstmt.close();
@@ -120,40 +157,6 @@ public class TaskServlet extends HttpServlet {
                 e.printStackTrace();
             } finally {
                 db.disconnect();
-            }
-            response.sendRedirect("task-board.jsp");
-        } else if ("updateStatus".equals(action)) {
-            String taskId = request.getParameter("id");
-            String newStatus = request.getParameter("status"); // TODO, IN_PROGRESS, DONE
-            
-            if (taskId != null && newStatus != null) {
-                DatabaseManager db = new DatabaseManager();
-                Connection con = db.getConnection();
-                try {
-                    if (con != null) {
-                        boolean isCompleted = "DONE".equals(newStatus);
-                        String sql = "UPDATE tasks SET status = ?, isCompleted = ? WHERE activityId = ?";
-                        PreparedStatement pstmt = con.prepareStatement(sql);
-                        pstmt.setString(1, newStatus);
-                        pstmt.setBoolean(2, isCompleted);
-                        pstmt.setString(3, taskId);
-                        pstmt.executeUpdate();
-                        pstmt.close();
-                        
-                        if (isCompleted) {
-                            int userId = (int) session.getAttribute("userId");
-                            String xpSql = "UPDATE users SET totalXP = totalXP + 50 WHERE id = ?";
-                            PreparedStatement pstmtXp = con.prepareStatement(xpSql);
-                            pstmtXp.setInt(1, userId);
-                            pstmtXp.executeUpdate();
-                            pstmtXp.close();
-                        }
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                } finally {
-                    db.disconnect();
-                }
             }
             response.sendRedirect("task-board.jsp");
         }

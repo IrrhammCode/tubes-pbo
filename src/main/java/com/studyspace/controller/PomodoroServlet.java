@@ -61,6 +61,22 @@ public class PomodoroServlet extends HttpServlet {
             } finally {
                 db.disconnect();
             }
+        } else if ("resetAll".equals(action)) {
+            DatabaseManager db = new DatabaseManager();
+            Connection con = db.getConnection();
+            try {
+                if (con != null) {
+                    String sql = "DELETE FROM pomodoro_sessions WHERE user_id = ?";
+                    PreparedStatement pstmt = con.prepareStatement(sql);
+                    pstmt.setInt(1, userId);
+                    pstmt.executeUpdate();
+                    pstmt.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                db.disconnect();
+            }
         }
         
         response.sendRedirect("pomodoro.jsp");

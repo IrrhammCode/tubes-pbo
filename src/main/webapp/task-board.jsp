@@ -195,8 +195,12 @@
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label text-muted">Mata Kuliah</label>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <label class="form-label text-muted m-0">Mata Kuliah</label>
+                                <button type="button" class="btn btn-sm btn-outline-primary py-0 px-2" style="font-size: 0.8rem;" data-bs-toggle="modal" data-bs-target="#addSubjectModal"><i class="fa-solid fa-plus"></i> Tambah Baru</button>
+                            </div>
                             <select class="form-select" name="subjectCode">
+                                <option value="">-- Tanpa Mata Kuliah --</option>
                                 <%
                                     try {
                                         PreparedStatement ps = con.prepareStatement("SELECT subjectCode, subjectName FROM subjects WHERE user_id = ?");
@@ -216,13 +220,45 @@
                             <input type="date" class="form-control" name="deadline" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label text-muted">Tingkat Kesulitan (1-5)</label>
-                            <input type="range" class="form-range" name="difficultyLevel" min="1" max="5" value="3">
+                            <label class="form-label text-muted d-flex justify-content-between">
+                                <span>Tingkat Kesulitan (1-5)</span>
+                                <span id="difficultyValue" class="badge bg-primary rounded-pill" style="font-size: 0.85rem;">3</span>
+                            </label>
+                            <input type="range" class="form-range" name="difficultyLevel" min="1" max="5" value="3" oninput="document.getElementById('difficultyValue').innerText = this.value">
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-outline" data-bs-dismiss="modal">Batal</button>
                         <button type="submit" class="btn btn-primary">Tambah Tugas</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Subject Modal -->
+    <div class="modal fade" id="addSubjectModal" tabindex="-1">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold">Tambah Mata Kuliah</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form action="SubjectServlet" method="POST">
+                    <input type="hidden" name="action" value="add">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Nama Mata Kuliah</label>
+                            <input type="text" class="form-control" name="subjectName" required placeholder="Contoh: Algoritma">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Kode MK (Opsional)</label>
+                            <input type="text" class="form-control" name="subjectCode" placeholder="Contoh: IF101">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary">Simpan</button>
                     </div>
                 </form>
             </div>

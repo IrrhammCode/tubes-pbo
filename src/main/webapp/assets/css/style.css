@@ -389,7 +389,7 @@ body {
   align-items: center;
 }
 
-.task-card {
+.kanban-card {
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: 12px;
@@ -399,18 +399,18 @@ body {
   transition: transform 0.2s;
   cursor: grab;
 }
-.task-card:hover {
+.kanban-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0,0,0,0.05);
   border-color: var(--text-muted);
 }
-.task-card-title {
+.kanban-card-title {
   font-weight: 700;
   font-size: 1rem;
   margin-bottom: 0.25rem;
   color: var(--text-main);
 }
-.task-card-subject {
+.kanban-card-subject {
   font-size: 0.85rem;
   color: var(--text-secondary);
   margin-bottom: 1rem;

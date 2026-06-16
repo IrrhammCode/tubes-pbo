@@ -1,6 +1,6 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%
-    // Prevent caching so user cannot go back to login page after logging in
+    // Prevent caching
     response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
     if(session.getAttribute("userId") != null) {
         response.sendRedirect("index.jsp");
@@ -12,7 +12,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - StudySpace</title>
+    <title>Daftar - StudySpace</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <style>
         body {
@@ -61,29 +61,45 @@
             margin-bottom: 15px;
             font-size: 0.9em;
         }
+        .success-msg {
+            color: #27ae60;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+        }
     </style>
 </head>
 <body>
 
 <div class="login-card">
     <h2 style="color: #2c3e50; margin-bottom: 5px;">StudySpace</h2>
-    <p style="color: #7f8c8d; margin-bottom: 25px;">Masuk ke akun Anda</p>
+    <p style="color: #7f8c8d; margin-bottom: 25px;">Buat akun baru Anda</p>
     
     <% if(request.getAttribute("error") != null) { %>
         <div class="error-msg"><%= request.getAttribute("error") %></div>
     <% } %>
+    <% if(request.getAttribute("success") != null) { %>
+        <div class="success-msg"><%= request.getAttribute("success") %></div>
+    <% } %>
 
-    <form action="LoginServlet" method="POST">
+    <form action="RegisterServlet" method="POST">
         <div class="form-group">
             <label>Username</label>
-            <input type="text" name="user" required placeholder="admin" value="admin">
+            <input type="text" name="user" required placeholder="Masukkan username">
+        </div>
+        <div class="form-group">
+            <label>Email</label>
+            <input type="email" name="email" required placeholder="email@contoh.com">
         </div>
         <div class="form-group">
             <label>Password</label>
-            <input type="password" name="pass" required placeholder="admin123" value="admin123">
+            <input type="password" name="pass" required placeholder="Masukkan password">
         </div>
-        <button type="submit" class="btn-primary" style="margin-bottom: 15px;">Masuk</button>
-        <p style="color: #7f8c8d; font-size: 0.9em;">Belum punya akun? <a href="register.jsp" style="color: #4a6ee0; text-decoration: none; font-weight: bold;">Daftar di sini</a></p>
+        <div class="form-group">
+            <label>Konfirmasi Password</label>
+            <input type="password" name="confirm_pass" required placeholder="Ulangi password">
+        </div>
+        <button type="submit" class="btn-primary" style="margin-bottom: 15px;">Daftar</button>
+        <p style="color: #7f8c8d; font-size: 0.9em;">Sudah punya akun? <a href="login.jsp" style="color: #4a6ee0; text-decoration: none; font-weight: bold;">Masuk di sini</a></p>
     </form>
 </div>
 
