@@ -2,7 +2,9 @@
 <%@page import="java.sql.Connection"%>
 <%@page import="java.sql.PreparedStatement"%>
 <%@page import="com.studyspace.data.DatabaseManager"%>
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page import="com.studyspace.model.*"%>
+<%@page import="java.time.LocalDateTime"%>
+<%@page import="java.util.*"%>
 <%
     if (session.getAttribute("userId") == null) {
         response.sendRedirect("LoginServlet");
@@ -70,9 +72,25 @@
                                     ps.setInt(1, userId);
                                     ResultSet rs = ps.executeQuery();
                                     while(rs.next()) {
+                                        // OOP: Create Task object for priority calculation
+                                        String tType = rs.getString("taskType");
+                                        LocalDateTime dl = LocalDateTime.now().plusDays(7);
+                                        try { dl = LocalDateTime.parse(rs.getString("deadline").replace(" ", "T")); } catch(Exception ex){}
+                                        Task task;
+                                        if ("EXAM".equals(tType)) {
+                                            task = new ExamTask(rs.getString("activityId"), rs.getString("title"), dl, rs.getInt("difficultyLevel"), new ArrayList<>());
+                                        } else {
+                                            task = new AssignmentTask(rs.getString("activityId"), rs.getString("title"), dl, rs.getInt("difficultyLevel"), "");
+                                        }
+                                        double score = task.calculatePriorityScore();
+                                        String scoreColor = score > 50 ? "danger" : (score > 20 ? "warning" : "success");
+                                        
                                         out.print("<div class='kanban-card'>");
-                                        out.print("<div class='fw-bold mb-1'>" + rs.getString("title") + "</div>");
-                                        out.print("<div class='text-muted small mb-2'>" + (rs.getString("subjectName")!=null?rs.getString("subjectName"):"-") + "</div>");
+                                        out.print("<div class='d-flex justify-content-between align-items-start mb-1'>");
+                                        out.print("<span class='fw-bold'>" + rs.getString("title") + "</span>");
+                                        out.print("<span class='badge bg-" + scoreColor + "' title='Skor Prioritas' style='font-size:0.7rem;'>" + String.format("%.0f", score) + "</span>");
+                                        out.print("</div>");
+                                        out.print("<div class='text-muted small mb-2'>" + (rs.getString("subjectName")!=null?rs.getString("subjectName"):"-") + " &middot; " + tType + "</div>");
                                         out.print("<div class='d-flex justify-content-between align-items-center'>");
                                         out.print("<span class='badge bg-light text-dark border'><i class='fa-regular fa-clock me-1'></i>" + rs.getString("deadline").substring(0, 10) + "</span>");
                                         out.print("<div>");
@@ -220,11 +238,22 @@
                             <input type="date" class="form-control" name="deadline" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label text-muted d-flex justify-content-between">
-                                <span>Tingkat Kesulitan (1-5)</span>
+                            <label class="form-label text-muted">Tingkat Kesulitan (1-5)</label>
+                            <div class="d-flex justify-content-between">
                                 <span id="difficultyValue" class="badge bg-primary rounded-pill" style="font-size: 0.85rem;">3</span>
-                            </label>
+                            </div>
                             <input type="range" class="form-range" name="difficultyLevel" min="1" max="5" value="3" oninput="document.getElementById('difficultyValue').innerText = this.value">
+                        </div>
+                        <!-- Polymorphic Fields: AssignmentTask -->
+                        <div class="mb-3" id="field-attachment">
+                            <label class="form-label text-muted">Link Tugas (AssignmentTask)</label>
+                            <input type="url" class="form-control" name="attachmentLink" placeholder="https://github.com/...">
+                        </div>
+                        <!-- Polymorphic Fields: ExamTask -->
+                        <div class="mb-3 d-none" id="field-syllabus">
+                            <label class="form-label text-muted">Materi Silabus (ExamTask)</label>
+                            <input type="text" class="form-control" name="syllabusList" placeholder="Inheritance,Polymorphism,Interface">
+                            <small class="text-muted">Pisahkan dengan koma</small>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -266,5 +295,13 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Toggle polymorphic form fields based on task type
+        document.querySelector('select[name="type"]').addEventListener('change', function() {
+            const isExam = this.value === 'EXAM';
+            document.getElementById('field-attachment').classList.toggle('d-none', isExam);
+            document.getElementById('field-syllabus').classList.toggle('d-none', !isExam);
+        });
+    </script>
 </body>
 </html>

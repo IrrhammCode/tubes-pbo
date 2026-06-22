@@ -1,9 +1,11 @@
 package com.studyspace.controller;
 
 import com.studyspace.data.DatabaseManager;
+import com.studyspace.model.PomodoroSession;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.time.format.DateTimeFormatter;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -34,24 +36,32 @@ public class PomodoroServlet extends HttpServlet {
 
             String sessionId = "pom-" + UUID.randomUUID().toString().substring(0, 8);
 
+            // === OOP: Create PomodoroSession object, use complete() method ===
+            PomodoroSession pomoSession = new PomodoroSession(sessionId, duration);
+            pomoSession.complete(); // Sets endTime and completed=true
+
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
             DatabaseManager db = new DatabaseManager();
             Connection con = db.getConnection();
             try {
                 if (con != null) {
-                    // Insert Pomodoro Session
-                    String sql = "INSERT INTO pomodoro_sessions (sessionId, startTime, endTime, durationMinutes, completed, user_id) VALUES (?, NOW() - INTERVAL ? MINUTE, NOW(), ?, TRUE, ?)";
+                    // Persist using object getters (Encapsulation)
+                    String sql = "INSERT INTO pomodoro_sessions (sessionId, startTime, endTime, durationMinutes, completed, user_id) VALUES (?, ?, ?, ?, ?, ?)";
                     PreparedStatement pstmt = con.prepareStatement(sql);
-                    pstmt.setString(1, sessionId);
-                    pstmt.setInt(2, duration);
-                    pstmt.setInt(3, duration);
-                    pstmt.setInt(4, userId);
+                    pstmt.setString(1, pomoSession.getSessionId());
+                    pstmt.setString(2, pomoSession.getStartTime().format(dtf));
+                    pstmt.setString(3, pomoSession.getEndTime().format(dtf));
+                    pstmt.setInt(4, pomoSession.getDurationMinutes());
+                    pstmt.setBoolean(5, pomoSession.isCompleted());
+                    pstmt.setInt(6, userId);
                     pstmt.executeUpdate();
                     pstmt.close();
 
                     // Update User Stats
                     String xpSql = "UPDATE users SET totalXP = totalXP + 50, pomodoroSessionsCount = pomodoroSessionsCount + 1, totalFocusMinutes = totalFocusMinutes + ? WHERE id = ?";
                     PreparedStatement pstmtXp = con.prepareStatement(xpSql);
-                    pstmtXp.setInt(1, duration);
+                    pstmtXp.setInt(1, pomoSession.getDurationMinutes());
                     pstmtXp.setInt(2, userId);
                     pstmtXp.executeUpdate();
                     pstmtXp.close();

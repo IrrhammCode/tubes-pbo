@@ -2,6 +2,10 @@
 <%@page import="java.sql.Connection"%>
 <%@page import="java.sql.PreparedStatement"%>
 <%@page import="com.studyspace.data.DatabaseManager"%>
+<%@page import="com.studyspace.model.*"%>
+<%@page import="com.studyspace.controller.ReminderManager"%>
+<%@page import="java.time.LocalDateTime"%>
+<%@page import="java.util.*"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%
     if (session.getAttribute("userId") == null) {
@@ -120,10 +124,10 @@
                 </div>
             </div>
 
-            <!-- Daftar Semua Tugas -->
+            <!-- Daftar Tugas (Sorted by Priority using ReminderManager + PriorityQueue) -->
             <div class="custom-card">
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h5 class="m-0" style="font-weight: 700; letter-spacing: 1px;">DAFTAR TUGAS</h5>
+                    <h5 class="m-0" style="font-weight: 700; letter-spacing: 1px;">DAFTAR TUGAS <span class="badge bg-primary bg-opacity-10 text-primary ms-2" style="font-size:0.7rem;">Diurutkan berdasarkan Prioritas</span></h5>
                     <a href="task-board.jsp" class="btn btn-primary"><i class="fa-solid fa-arrow-right me-2"></i> Lihat Task Board</a>
                 </div>
                 
@@ -135,28 +139,108 @@
                                 <th>Mata Kuliah</th>
                                 <th>Deadline</th>
                                 <th>Kesulitan</th>
+                                <th>Prioritas</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
                         <tbody>
                             <%
+                                // === OOP: Use ReminderManager (PriorityQueue<Task>) for sorting ===
+                                ReminderManager reminderManager = new ReminderManager();
+                                java.util.Map<String, String> taskSubjectMap = new java.util.HashMap<>();
+                                
                                 try {
-                                    PreparedStatement psList = con.prepareStatement("SELECT t.title, s.subjectName, t.deadline, t.difficultyLevel, t.status FROM tasks t LEFT JOIN subjects s ON t.subjectCode = s.subjectCode WHERE t.user_id = ? ORDER BY t.deadline ASC LIMIT 10");
+                                    PreparedStatement psList = con.prepareStatement(
+                                        "SELECT t.activityId, t.title, t.taskType, t.deadline, t.difficultyLevel, t.status, t.isCompleted, t.attachmentLink, t.syllabusList, s.subjectName " +
+                                        "FROM tasks t LEFT JOIN subjects s ON t.subjectCode = s.subjectCode WHERE t.user_id = ? ORDER BY t.deadline ASC LIMIT 15");
                                     psList.setInt(1, userId);
                                     ResultSet rsList = psList.executeQuery();
+                                    
                                     while(rsList.next()) {
-                                        out.print("<tr>");
-                                        out.print("<td>" + rsList.getString("title") + "</td>");
-                                        out.print("<td>" + (rsList.getString("subjectName")!=null?rsList.getString("subjectName"):"-") + "</td>");
-                                        out.print("<td>" + rsList.getString("deadline") + "</td>");
-                                        out.print("<td>Level " + rsList.getInt("difficultyLevel") + "</td>");
-                                        String badge = rsList.getString("status").equals("DONE") ? "bg-success" : (rsList.getString("status").equals("IN_PROGRESS") ? "bg-primary" : "bg-secondary");
-                                        out.print("<td><span class='badge " + badge + "'>" + rsList.getString("status") + "</span></td>");
-                                        out.print("</tr>");
+                                        String tId = rsList.getString("activityId");
+                                        String tTitle = rsList.getString("title");
+                                        String tType = rsList.getString("taskType");
+                                        String tDeadlineStr = rsList.getString("deadline");
+                                        int tDiff = rsList.getInt("difficultyLevel");
+                                        String tStatus = rsList.getString("status");
+                                        boolean tCompleted = rsList.getBoolean("isCompleted");
+                                        String subName = rsList.getString("subjectName");
+                                        
+                                        // Parse deadline
+                                        LocalDateTime tDeadline = LocalDateTime.now().plusDays(7);
+                                        try { tDeadline = LocalDateTime.parse(tDeadlineStr.replace(" ", "T")); } catch(Exception ex) {}
+                                        
+                                        // Polymorphism: create correct subclass
+                                        Task task;
+                                        if ("EXAM".equals(tType)) {
+                                            String sylStr = rsList.getString("syllabusList");
+                                            List<String> sylList = sylStr != null ? Arrays.asList(sylStr.split(",")) : new ArrayList<>();
+                                            task = new ExamTask(tId, tTitle, tDeadline, tDiff, sylList);
+                                        } else {
+                                            String attLink = rsList.getString("attachmentLink");
+                                            task = new AssignmentTask(tId, tTitle, tDeadline, tDiff, attLink != null ? attLink : "");
+                                        }
+                                        task.setStatus(tStatus);
+                                        task.setCompleted(tCompleted);
+                                        
+                                        // Add to PriorityQueue via ReminderManager
+                                        reminderManager.addTaskToQueue(task);
+                                        taskSubjectMap.put(tId, subName != null ? subName : "-");
                                     }
                                     rsList.close(); psList.close();
                                 } catch(Exception e){}
+                                
+                                // Get tasks sorted by priority score (highest first)
+                                List<Task> sortedTasks = reminderManager.getSortedTasks();
+                                
+                                // Also add completed tasks at the end
+                                List<Task> allCompleted = new ArrayList<>();
+                                try {
+                                    PreparedStatement psDone = con.prepareStatement(
+                                        "SELECT t.activityId, t.title, t.taskType, t.deadline, t.difficultyLevel, t.status, s.subjectName " +
+                                        "FROM tasks t LEFT JOIN subjects s ON t.subjectCode = s.subjectCode WHERE t.user_id = ? AND t.status = 'DONE' ORDER BY t.deadline DESC LIMIT 5");
+                                    psDone.setInt(1, userId);
+                                    ResultSet rsDone = psDone.executeQuery();
+                                    while(rsDone.next()) {
+                                        String tId = rsDone.getString("activityId");
+                                        taskSubjectMap.put(tId, rsDone.getString("subjectName") != null ? rsDone.getString("subjectName") : "-");
+                                        LocalDateTime dl = LocalDateTime.now();
+                                        try { dl = LocalDateTime.parse(rsDone.getString("deadline").replace(" ", "T")); } catch(Exception ex) {}
+                                        Task doneTask = new AssignmentTask(tId, rsDone.getString("title"), dl, rsDone.getInt("difficultyLevel"), "");
+                                        doneTask.setCompleted(true); doneTask.setStatus("DONE");
+                                        allCompleted.add(doneTask);
+                                    }
+                                    rsDone.close(); psDone.close();
+                                } catch(Exception e){}
+                                
                                 db.disconnect();
+                                
+                                // Render sorted active tasks
+                                for (Task t : sortedTasks) {
+                                    double score = t.calculatePriorityScore();
+                                    String scoreColor = score > 50 ? "danger" : (score > 20 ? "warning" : "success");
+                                    String badge = t.getStatus().equals("IN_PROGRESS") ? "bg-primary" : "bg-secondary";
+                                    out.print("<tr>");
+                                    out.print("<td>" + t.getTitle() + "</td>");
+                                    out.print("<td>" + taskSubjectMap.getOrDefault(t.getActivityId(), "-") + "</td>");
+                                    out.print("<td>" + t.getDeadline().toLocalDate() + "</td>");
+                                    out.print("<td>Level " + t.getDifficultyLevel() + "</td>");
+                                    out.print("<td><span class='badge bg-" + scoreColor + "'>" + String.format("%.1f", score) + "</span></td>");
+                                    out.print("<td><span class='badge " + badge + "'>" + t.getStatus() + "</span></td>");
+                                    out.print("</tr>");
+                                }
+                                
+                                // Render completed tasks
+                                for (Task t : allCompleted) {
+                                    out.print("<tr style='opacity:0.5'>");
+                                    out.print("<td class='text-decoration-line-through'>" + t.getTitle() + "</td>");
+                                    out.print("<td>" + taskSubjectMap.getOrDefault(t.getActivityId(), "-") + "</td>");
+                                    out.print("<td>" + t.getDeadline().toLocalDate() + "</td>");
+                                    out.print("<td>Level " + t.getDifficultyLevel() + "</td>");
+                                    out.print("<td><span class='badge bg-secondary'>-</span></td>");
+                                    out.print("<td><span class='badge bg-success'>DONE</span></td>");
+                                    out.print("</tr>");
+                                }
                             %>
                         </tbody>
                     </table>

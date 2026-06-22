@@ -30,6 +30,7 @@ CREATE TABLE IF NOT EXISTS tasks (
     subjectCode VARCHAR(20),
     attachmentLink VARCHAR(255), -- for AssignmentTask
     syllabusList TEXT, -- for ExamTask, comma separated
+    priorityScore DOUBLE DEFAULT 0, -- calculated from Prioritizable interface
     user_id INT,
     FOREIGN KEY (subjectCode) REFERENCES subjects(subjectCode) ON DELETE SET NULL,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
